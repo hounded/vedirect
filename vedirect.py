@@ -8,10 +8,10 @@ class vedirect:
     def __init__(self, serialport, timeout):
         self.serialport = serialport
         self.ser = serial.Serial(serialport, 19200, timeout=timeout)
-        self.header1 = '\r'
-        self.header2 = '\n'
-        self.hexmarker = ':'
-        self.delimiter = '\t'
+        self.header1 = b'\r'
+        self.header2 = b'\n'
+        self.hexmarker = b':'
+        self.delimiter = b'\t'
         self.key = ''
         self.value = ''
         self.bytes_sum = 0;
@@ -42,7 +42,7 @@ class vedirect:
                 else:
                     self.state = self.IN_VALUE
             else:
-                self.key += byte
+                self.key += byte.decode("utf-8")
             return None
         elif self.state == self.IN_VALUE:
             self.bytes_sum += ord(byte)
@@ -52,7 +52,7 @@ class vedirect:
                 self.key = '';
                 self.value = '';
             else:
-                self.value += byte
+                self.value += byte.decode("utf-8")
             return None
         elif self.state == self.IN_CHECKSUM:
             self.bytes_sum += ord(byte)
@@ -63,7 +63,7 @@ class vedirect:
                 self.bytes_sum = 0
                 return self.dict
             else:
-                print 'Malformed packet'
+                print('Malformed packet')
                 self.bytes_sum = 0
         elif self.state == self.HEX:
             self.bytes_sum = 0
@@ -97,7 +97,7 @@ class vedirect:
 
 
 def print_data_callback(data):
-    print data
+    print(data)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process VE.Direct protocol')
